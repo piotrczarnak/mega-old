@@ -1,10 +1,10 @@
 ---
 layout: runbook
-title: '#4471 · two problems, not one'
+title: '#4471 · three problems, not one'
 owner: support desk
 status: open
 reviewed: 2026-10-30
-signature: v1.eyJzdG9yeSI6Im9mZiIsInN1YiI6IjIyODQiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC1pdC1zaG93cyIsImlhdCI6MTc5MzM1OTAyOCwiZXhwIjoxNzkzNDQ1NDI4fQ.t00ORrLJ4CmVewFZWZ2p_MvuIcdgki-wkci1E8oBgxI
+signature: v1.eyJzdWIiOiIyMjg0IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMzODU1ODIsImV4cCI6MTc5MzQ3MTk4Mn0.QGEjbMkZV799cqXZ76qeOqdP-h0_yJKzTptUoPOs1CA
 ---
 
 <script>
@@ -15,7 +15,7 @@ signature: v1.eyJzdG9yeSI6Im9mZiIsInN1YiI6IjIyODQiLCJhdWQiOiJjaGFsbGVuZ2U6d2hhdC
 
 #4471 merged **412 reports** as "dates parse mm/dd in eu locales". The export has 427 rows,
 but 15 are duplicates of the same report id, so 412 is the real count. The reports do not
-share one cause. They split into two problems, and only the first one is fixed.
+share one cause. They split into three problems, and only the first one is fixed.
 
 <Callout kind="warn">
 The desk update says "parser fixed, hint won't fix because booking-v3 is retired". Both
@@ -31,23 +31,22 @@ The cause comes from the **tenant**: its locale and the booking form it runs. It
 come from intake's tag, which is a guess from the reporter's browser. Intake tagged 23
 parser reports as `hint` and 15 hint reports as `parser`.
 
-## The two problems
+## The three problems
 
 | problem | reports | ticket |
 | --- | ---: | --- |
-| Shared parser reads every date month-first | 379 | [#71](https://github.com/piotrczarnak/mega/issues/71) |
+| Shared parser reads every date month-first | 374 | [#71](https://github.com/piotrczarnak/mega/issues/71) |
 | booking-v3 form hints MM/DD/YYYY to day-first tenants | 33 | [#72](https://github.com/piotrczarnak/mega/issues/72) |
+| Bookings move by one day, not a month flip | 5 | [#73](https://github.com/piotrczarnak/mega/issues/73) |
 
-379 + 33 = 412.
+374 + 33 + 5 = 412.
 
-### 1. Parser, 379 reports
+### 1. Parser, 374 reports
 
 The shared parser reads every date month first, so day-first tenants get flipped dates. It
 hit all 11 day-first tenants, through the app, email and the form. The desk fix
 `fix(dates): parse dd/mm for eu locales` addresses this problem.
 
-Five of these reports (R-41202, R-41209, R-41236, R-41344, R-41620) read as a one-day move
-rather than a month flip. They are counted here, where they are filed, and footnoted.
 
 ### 2. Form hint, 33 reports
 
@@ -57,6 +56,14 @@ day first. Only tenants on booking-v3 with a day-first locale are affected: alde
 
 **Not fixed, and not retired.** The desk closed this as "won't fix: form retired", yet these
 three tenants still run booking-v3. The parser fix does not change what the hint prints.
+
+### 3. One-day move, 5 reports
+
+R-41202, R-41209, R-41236, R-41344 and R-41620 describe a booking that is exactly one day
+off, or an invite that arrived before the booking. That is not a month/day swap, so the
+parser fix does not explain it. The pattern suggests a time zone or daylight-saving shift.
+Intake tagged all five as `parser`. The cause is not confirmed; engineering needs to
+reproduce it.
 
 ## Lessons
 
