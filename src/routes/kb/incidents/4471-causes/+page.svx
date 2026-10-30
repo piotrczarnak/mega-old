@@ -19,7 +19,7 @@ share one cause. They split into three problems, and only the first one is fixed
 
 <Callout kind="warn">
 The desk update says "parser fixed, hint won't fix because booking-v3 is retired". Both
-halves need a second look: the parser fix covers one problem of two, and three tenants
+halves need a second look: the parser fix covers one problem of three, and three tenants
 still run booking-v3.
 </Callout>
 
